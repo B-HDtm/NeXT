@@ -10,7 +10,6 @@ permissions:
 jobs:
   python-check:
     name: Python Syntax Check
-    if: ${{ hashFiles('**/*.py') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,14 +17,21 @@ jobs:
         uses: actions/setup-python@07d4e924bc89c2c3df8afc2a3e74c377b68d9d06
         with:
           python-version: '3.x'
+      - name: List Python files found
+        run: |
+          echo "🐍 Python files found:"
+          find . -name "*.py" || echo "No Python files found"
       - name: Check Python syntax
         run: |
-          echo "🔍 Checking Python files..."
-          python -m py_compile $(find . -name "*.py" || echo "")
+          files=$(find . -name "*.py")
+          if [ -z "$files" ]; then
+            echo "No Python files to check."
+          else
+            python -m py_compile $files
+          fi
 
   nodejs-check:
     name: NodeJS Syntax Check
-    if: ${{ hashFiles('**/*.js') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,29 +39,43 @@ jobs:
         uses: actions/setup-node@536e94c570c9b1ae3c24a8707c7ff7962180b86d
         with:
           node-version: '20'
+      - name: List JS files found
+        run: |
+          echo "🟨 JS files found:"
+          find . -name "*.js" || echo "No JS files found"
       - name: Check JavaScript syntax
         run: |
-          echo "🔍 Checking JavaScript files..."
-          for file in $(find . -name "*.js" || echo ""); do
-            node --check "$file"
-          done
+          files=$(find . -name "*.js")
+          if [ -z "$files" ]; then
+            echo "No JS files to check."
+          else
+            for file in $files; do
+              node --check "$file"
+            done
+          fi
 
   cpp-check:
     name: C++ Syntax Check
-    if: ${{ hashFiles('**/*.cpp') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: List C++ files found
+        run: |
+          echo "🔵 C++ files found:"
+          find . -name "*.cpp" || echo "No C++ files found"
       - name: Check C++ syntax
         run: |
-          echo "🔍 Checking C++ files..."
-          for file in $(find . -name "*.cpp" || echo ""); do
-            g++ -fsyntax-only "$file"
-          done
+          files=$(find . -name "*.cpp")
+          if [ -z "$files" ]; then
+            echo "No C++ files to check."
+          else
+            for file in $files; do
+              g++ -fsyntax-only "$file"
+            done
+          fi
 
   java-check:
     name: Java Syntax Check
-    if: ${{ hashFiles('**/*.java') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -63,16 +83,23 @@ jobs:
         uses: actions/setup-java@7d2fa46a334d9a9f98c0122396fa6d120b228310
         with:
           java-version: '21'
+      - name: List Java files found
+        run: |
+          echo "☕ Java files found:"
+          find . -name "*.java" || echo "No Java files found"
       - name: Check Java syntax
         run: |
-          echo "🔍 Checking Java files..."
-          for file in $(find . -name "*.java" || echo ""); do
-            javac -Xlint "$file"
-          done
+          files=$(find . -name "*.java")
+          if [ -z "$files" ]; then
+            echo "No Java files to check."
+          else
+            for file in $files; do
+              javac -Xlint "$file"
+            done
+          fi
 
   php-check:
     name: PHP Syntax Check
-    if: ${{ hashFiles('**/*.php') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -80,9 +107,17 @@ jobs:
         uses: shivammathur/setup-php@e6e6fdb21d10f8c245fa7bd2dbd50894c8fdc7e5
         with:
           php-version: '8.3'
+      - name: List PHP files found
+        run: |
+          echo "🐘 PHP files found:"
+          find . -name "*.php" || echo "No PHP files found"
       - name: Check PHP syntax
         run: |
-          echo "🔍 Checking PHP files..."
-          for file in $(find . -name "*.php" || echo ""); do
-            php -l "$file"
-          done
+          files=$(find . -name "*.php")
+          if [ -z "$files" ]; then
+            echo "No PHP files to check."
+          else
+            for file in $files; do
+              php -l "$file"
+            done
+          fi

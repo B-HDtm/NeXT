@@ -20,6 +20,15 @@ NXT symbolizes the **Next Generation** of blockchain development, integrating C+
 
 ---
 
+## 🛜 Talk
+
+- **Learning:** With people, family and friends.
+- **Demonstration:** Show everything and create your own cryptocurrency, engines, etc. Due to this!
+- **Foundation:** Create organizations from enthusiasts who are ready to use this blockchain to create something great and learn!
+- **Community:** Chat in the official [NeXT ChaUP](https://github.com/B-HDtm/NeXT/discussions/1) chat and increase views of your projects, tell everyone, get and give support.
+
+---
+
 ## ⚙️ How it works
 
 - Each language generates random "transactions" — random amounts and hashes.
@@ -82,6 +91,5 @@ This project is licensed under the MIT License — feel free to use, modify, and
 ## 📬 Contact
 
 - 📧 markd.voznyuk@gmail.com
-- 🌐 https://umbriox.pp.ua
 
 Let’s build the future of blockchain technology together! ⥉

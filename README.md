@@ -43,7 +43,7 @@ NXT symbolizes the **Next Generation** of blockchain development, integrating C+
 
    ```bash
    git clone https://github.com/B-HDtm/NeXT
-   cd next-blockchain
+   cd NeXT
    ```
 
 2. Ensure you have the required compilers and interpreters installed:

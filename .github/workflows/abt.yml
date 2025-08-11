@@ -82,7 +82,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'  # самая популярная и рекомендуемая
+          distribution: 'temurin'
           java-version: '21'
       - name: List Java files found
         run: |

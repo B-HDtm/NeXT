@@ -1,0 +1,85 @@
+name: ABT
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python-check:
+    name: Python Syntax Check
+    if: ${{ hashFiles('**/*.py') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check Python syntax
+        run: |
+          echo "🔍 Checking Python files..."
+          python -m py_compile $(find . -name "*.py")
+
+  nodejs-check:
+    name: NodeJS Syntax Check
+    if: ${{ hashFiles('**/*.js') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check JavaScript syntax
+        run: |
+          echo "🔍 Checking JavaScript files..."
+          for file in $(find . -name "*.js"); do
+            node --check "$file"
+          done
+
+  cpp-check:
+    name: C++ Syntax Check
+    if: ${{ hashFiles('**/*.cpp') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check C++ syntax
+        run: |
+          echo "🔍 Checking C++ files..."
+          for file in $(find . -name "*.cpp"); do
+            g++ -fsyntax-only "$file"
+          done
+
+  java-check:
+    name: Java Syntax Check
+    if: ${{ hashFiles('**/*.java') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+      - name: Check Java syntax
+        run: |
+          echo "🔍 Checking Java files..."
+          for file in $(find . -name "*.java"); do
+            javac -Xlint "$file"
+          done
+
+  php-check:
+    name: PHP Syntax Check
+    if: ${{ hashFiles('**/*.php') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: Check PHP syntax
+        run: |
+          echo "🔍 Checking PHP files..."
+          for file in $(find . -name "*.php"); do
+            php -l "$file"
+          done

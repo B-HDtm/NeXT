@@ -1,3 +1,5 @@
+permissions:
+  contents: read
 name: NodeJS with Grunt
 
 on:

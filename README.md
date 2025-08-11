@@ -42,7 +42,7 @@ NXT symbolizes the **Next Generation** of blockchain development, integrating C+
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-org/next-blockchain.git
+   git clone https://github.com/B-HDtm/NeXT
    cd next-blockchain
    ```
 

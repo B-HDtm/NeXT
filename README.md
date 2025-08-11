@@ -1,6 +1,6 @@
 # NeXT Blockchain (NXT) ⥉
 
-![NeXT Logo](ico.png)
+![NeXT Logo](https://github.com/B-HDtm/NeXT/ico.png)
 
 ---
 

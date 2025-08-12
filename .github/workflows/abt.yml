@@ -1,12 +1,9 @@
 name: ABT
-
 on:
   push:
   pull_request:
-
 permissions:
   contents: read
-
 jobs:
   python-check:
     name: Python Syntax Check
@@ -19,19 +16,15 @@ jobs:
           python-version: '3.x'
       - name: List Python files found
         run: |
-          echo "🐍 Python files found:"
-          find . -name "*.py" || echo "No Python files found"
-      - name: Check Python syntax
-        run: |
           files=$(find . -name "*.py")
           if [ -z "$files" ]; then
-            echo "No Python files to check."
-          else
-            python -m py_compile $files
+            echo "No python files found."
+            exit 0
           fi
+          python -m py_compile $files
 
-  nodejs-check:
-    name: NodeJS Syntax Check
+  javascript-check:
+    name: Javascript Syntax Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,40 +32,88 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-      - name: List JS files found
-        run: |
-          echo "🟨 JS files found:"
-          find . -name "*.js" || echo "No JS files found"
-      - name: Check JavaScript syntax
+      - name: List Javascript files found
         run: |
           files=$(find . -name "*.js")
           if [ -z "$files" ]; then
-            echo "No JS files to check."
-          else
-            for file in $files; do
-              node --check "$file"
-            done
+            echo "No javascript files found."
+            exit 0
           fi
+          for file in $files; do
+            node --check "$file"
+          done
 
-  cpp-check:
-    name: C++ Syntax Check
+  typescript-check:
+    name: Typescript Syntax Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: List C++ files found
+      - name: List Typescript files found
         run: |
-          echo "🔵 C++ files found:"
-          find . -name "*.cpp" || echo "No C++ files found"
-      - name: Check C++ syntax
-        run: |
-          files=$(find . -name "*.cpp")
+          files=$(find . -name "*.ts")
           if [ -z "$files" ]; then
-            echo "No C++ files to check."
-          else
-            for file in $files; do
-              g++ -fsyntax-only "$file"
-            done
+            echo "No typescript files found."
+            exit 0
           fi
+          tsc --noEmit
+
+  go-check:
+    name: Go Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+      - name: List Go files found
+        run: |
+          files=$(find . -name "*.go")
+          if [ -z "$files" ]; then
+            echo "No go files found."
+            exit 0
+          fi
+          go fmt $files
+
+  ruby-check:
+    name: Ruby Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+      - name: List Ruby files found
+        run: |
+          files=$(find . -name "*.rb")
+          if [ -z "$files" ]; then
+            echo "No ruby files found."
+            exit 0
+          fi
+          for file in $files; do
+            ruby -c "$file"
+          done
+
+  php-check:
+    name: Php Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: List Php files found
+        run: |
+          files=$(find . -name "*.php")
+          if [ -z "$files" ]; then
+            echo "No php files found."
+            exit 0
+          fi
+          for file in $files; do
+            php -l "$file"
+          done
 
   java-check:
     name: Java Syntax Check
@@ -86,39 +127,1362 @@ jobs:
           java-version: '21'
       - name: List Java files found
         run: |
-          echo "☕ Java files found:"
-          find . -name "*.java" || echo "No Java files found"
-      - name: Check Java syntax
-        run: |
           files=$(find . -name "*.java")
           if [ -z "$files" ]; then
-            echo "No Java files to check."
-          else
-            for file in $files; do
-              javac -Xlint "$file"
-            done
+            echo "No java files found."
+            exit 0
           fi
+          for file in $files; do
+            javac -Xlint "$file"
+          done
 
-  php-check:
-    name: PHP Syntax Check
+  c-check:
+    name: C Syntax Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-      - name: List PHP files found
+      - name: List C files found
         run: |
-          echo "🐘 PHP files found:"
-          find . -name "*.php" || echo "No PHP files found"
-      - name: Check PHP syntax
-        run: |
-          files=$(find . -name "*.php")
+          files=$(find . -name "*.c")
           if [ -z "$files" ]; then
-            echo "No PHP files to check."
-          else
-            for file in $files; do
-              php -l "$file"
-            done
+            echo "No c files found."
+            exit 0
           fi
+          for file in $files; do
+            gcc -fsyntax-only "$file"
+          done
+
+  cpp-check:
+    name: Cpp Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Cpp files found
+        run: |
+          files=$(find . -name "*.cpp" -o -name "*.cc" -o -name "*.cxx")
+          if [ -z "$files" ]; then
+            echo "No cpp files found."
+            exit 0
+          fi
+          for file in $files; do
+            g++ -fsyntax-only "$file"
+          done
+
+  kotlin-check:
+    name: Kotlin Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: List Kotlin files found
+        run: |
+          files=$(find . -name "*.kt")
+          if [ -z "$files" ]; then
+            echo "No kotlin files found."
+            exit 0
+          fi
+          kotlinc $files -d /dev/null
+
+  swift-check:
+    name: Swift Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Swift files found
+        run: |
+          files=$(find . -name "*.swift")
+          if [ -z "$files" ]; then
+            echo "No swift files found."
+            exit 0
+          fi
+          swiftc -parse $files
+
+  scala-check:
+    name: Scala Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Scala files found
+        run: |
+          files=$(find . -name "*.scala")
+          if [ -z "$files" ]; then
+            echo "No scala files found."
+            exit 0
+          fi
+          scalac $files
+
+  perl-check:
+    name: Perl Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Perl files found
+        run: |
+          files=$(find . -name "*.pl")
+          if [ -z "$files" ]; then
+            echo "No perl files found."
+            exit 0
+          fi
+          for file in $files; do
+            perl -c "$file"
+          done
+
+  bash-check:
+    name: Bash Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Bash files found
+        run: |
+          files=$(find . -name "*.sh" -o -name "*.bash")
+          if [ -z "$files" ]; then
+            echo "No bash files found."
+            exit 0
+          fi
+          for file in $files; do
+            shellcheck "$file"
+          done
+
+  lua-check:
+    name: Lua Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Lua files found
+        run: |
+          files=$(find . -name "*.lua")
+          if [ -z "$files" ]; then
+            echo "No lua files found."
+            exit 0
+          fi
+          for file in $files; do
+            luac -p "$file"
+          done
+
+  rust-check:
+    name: Rust Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Rust files found
+        run: |
+          files=$(find . -name "*.rs")
+          if [ -z "$files" ]; then
+            echo "No rust files found."
+            exit 0
+          fi
+          cargo check
+
+  elixir-check:
+    name: Elixir Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Elixir files found
+        run: |
+          files=$(find . -name "*.ex" -o -name "*.exs")
+          if [ -z "$files" ]; then
+            echo "No elixir files found."
+            exit 0
+          fi
+          elixirc $files
+
+  haskell-check:
+    name: Haskell Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Haskell files found
+        run: |
+          files=$(find . -name "*.hs")
+          if [ -z "$files" ]; then
+            echo "No haskell files found."
+            exit 0
+          fi
+          ghc -fno-code $files
+
+  r-check:
+    name: R Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List R files found
+        run: |
+          files=$(find . -name "*.r")
+          if [ -z "$files" ]; then
+            echo "No r files found."
+            exit 0
+          fi
+          for file in $files; do
+            Rscript -e 'parse(file=""$file"")'
+          done
+
+  groovy-check:
+    name: Groovy Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Groovy files found
+        run: |
+          files=$(find . -name "*.groovy")
+          if [ -z "$files" ]; then
+            echo "No groovy files found."
+            exit 0
+          fi
+          groovyc $files
+
+  clojure-check:
+    name: Clojure Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Clojure files found
+        run: |
+          files=$(find . -name "*.clj")
+          if [ -z "$files" ]; then
+            echo "No clojure files found."
+            exit 0
+          fi
+          for file in $files; do
+            clojure -e '(compile ""$file"")'
+          done
+
+  objective-c-check:
+    name: Objective-c Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Objective-c files found
+        run: |
+          files=$(find . -name "*.m")
+          if [ -z "$files" ]; then
+            echo "No objective-c files found."
+            exit 0
+          fi
+          clang -fsyntax-only $files
+
+  objective-cpp-check:
+    name: Objective-cpp Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Objective-cpp files found
+        run: |
+          files=$(find . -name "*.mm")
+          if [ -z "$files" ]; then
+            echo "No objective-cpp files found."
+            exit 0
+          fi
+          clang++ -fsyntax-only $files
+
+  fortran-check:
+    name: Fortran Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Fortran files found
+        run: |
+          files=$(find . -name "*.f" -o -name "*.f90")
+          if [ -z "$files" ]; then
+            echo "No fortran files found."
+            exit 0
+          fi
+          gfortran -fsyntax-only $files
+
+  matlab-check:
+    name: Matlab Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Matlab files found
+        run: |
+          files=$(find . -name "*.m")
+          if [ -z "$files" ]; then
+            echo "No matlab files found."
+            exit 0
+          fi
+          matlab -batch "exit"
+
+  powershell-check:
+    name: Powershell Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Powershell files found
+        run: |
+          files=$(find . -name "*.ps1")
+          if [ -z "$files" ]; then
+            echo "No powershell files found."
+            exit 0
+          fi
+          for file in $files; do
+            pwsh -nologo -noprofile -command "$file"
+          done
+
+  sql-check:
+    name: Sql Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Sql files found
+        run: |
+          files=$(find . -name "*.sql")
+          if [ -z "$files" ]; then
+            echo "No sql files found."
+            exit 0
+          fi
+          sqlfluff lint $files
+
+  coffee-check:
+    name: Coffee Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Coffee files found
+        run: |
+          files=$(find . -name "*.coffee")
+          if [ -z "$files" ]; then
+            echo "No coffee files found."
+            exit 0
+          fi
+          coffee -c -e ' '
+
+  elm-check:
+    name: Elm Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Elm files found
+        run: |
+          files=$(find . -name "*.elm")
+          if [ -z "$files" ]; then
+            echo "No elm files found."
+            exit 0
+          fi
+          elm make --warn
+
+  fsharp-check:
+    name: Fsharp Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Fsharp files found
+        run: |
+          files=$(find . -name "*.fs")
+          if [ -z "$files" ]; then
+            echo "No fsharp files found."
+            exit 0
+          fi
+          for file in $files; do
+            dotnet fsi --nologo --exec "$file"
+          done
+
+  zig-check:
+    name: Zig Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Zig files found
+        run: |
+          files=$(find . -name "*.zig")
+          if [ -z "$files" ]; then
+            echo "No zig files found."
+            exit 0
+          fi
+          zig build
+
+  nim-check:
+    name: Nim Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Nim files found
+        run: |
+          files=$(find . -name "*.nim")
+          if [ -z "$files" ]; then
+            echo "No nim files found."
+            exit 0
+          fi
+          for file in $files; do
+            nim check "$file"
+          done
+
+  vala-check:
+    name: Vala Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Vala files found
+        run: |
+          files=$(find . -name "*.vala")
+          if [ -z "$files" ]; then
+            echo "No vala files found."
+            exit 0
+          fi
+          valac --pkg gtk+-3.0 $files
+
+  erlang-check:
+    name: Erlang Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Erlang files found
+        run: |
+          files=$(find . -name "*.erl")
+          if [ -z "$files" ]; then
+            echo "No erlang files found."
+            exit 0
+          fi
+          erlc $files
+
+  solidity-check:
+    name: Solidity Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Solidity files found
+        run: |
+          files=$(find . -name "*.sol")
+          if [ -z "$files" ]; then
+            echo "No solidity files found."
+            exit 0
+          fi
+          solc --compile $files
+
+  tcl-check:
+    name: Tcl Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Tcl files found
+        run: |
+          files=$(find . -name "*.tcl")
+          if [ -z "$files" ]; then
+            echo "No tcl files found."
+            exit 0
+          fi
+          for file in $files; do
+            tclsh "$file"
+          done
+
+  vhdl-check:
+    name: Vhdl Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Vhdl files found
+        run: |
+          files=$(find . -name "*.vhdl")
+          if [ -z "$files" ]; then
+            echo "No vhdl files found."
+            exit 0
+          fi
+          ghdl -s $files
+
+  verilog-check:
+    name: Verilog Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Verilog files found
+        run: |
+          files=$(find . -name "*.v")
+          if [ -z "$files" ]; then
+            echo "No verilog files found."
+            exit 0
+          fi
+          iverilog -tnull $files
+
+  sas-check:
+    name: Sas Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Sas files found
+        run: |
+          files=$(find . -name "*.sas")
+          if [ -z "$files" ]; then
+            echo "No sas files found."
+            exit 0
+          fi
+          for file in $files; do
+            sas "$file"
+          done
+
+  awk-check:
+    name: Awk Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Awk files found
+        run: |
+          files=$(find . -name "*.awk")
+          if [ -z "$files" ]; then
+            echo "No awk files found."
+            exit 0
+          fi
+          for file in $files; do
+            awk -f "$file" /dev/null
+          done
+
+  dart-check:
+    name: Dart Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Dart files found
+        run: |
+          files=$(find . -name "*.dart")
+          if [ -z "$files" ]; then
+            echo "No dart files found."
+            exit 0
+          fi
+          dart analyze
+
+  fstar-check:
+    name: Fstar Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Fstar files found
+        run: |
+          files=$(find . -name "*.fst")
+          if [ -z "$files" ]; then
+            echo "No fstar files found."
+            exit 0
+          fi
+          fstar.exe --verify $files
+
+  coq-check:
+    name: Coq Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Coq files found
+        run: |
+          files=$(find . -name "*.v")
+          if [ -z "$files" ]; then
+            echo "No coq files found."
+            exit 0
+          fi
+          coqc $files
+
+  idris-check:
+    name: Idris Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Idris files found
+        run: |
+          files=$(find . -name "*.idr")
+          if [ -z "$files" ]; then
+            echo "No idris files found."
+            exit 0
+          fi
+          idris --check $files
+
+  julia-check:
+    name: Julia Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Julia files found
+        run: |
+          files=$(find . -name "*.jl")
+          if [ -z "$files" ]; then
+            echo "No julia files found."
+            exit 0
+          fi
+          julia --compile=min $files
+
+  kotlin-script-check:
+    name: Kotlin-script Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Kotlin-script files found
+        run: |
+          files=$(find . -name "*.kts")
+          if [ -z "$files" ]; then
+            echo "No kotlin-script files found."
+            exit 0
+          fi
+          kotlinc -script $files
+
+  lisp-check:
+    name: Lisp Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Lisp files found
+        run: |
+          files=$(find . -name "*.lisp")
+          if [ -z "$files" ]; then
+            echo "No lisp files found."
+            exit 0
+          fi
+          clisp $files
+
+  ocaml-check:
+    name: Ocaml Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Ocaml files found
+        run: |
+          files=$(find . -name "*.ml" -o -name "*.mli")
+          if [ -z "$files" ]; then
+            echo "No ocaml files found."
+            exit 0
+          fi
+          ocamlc -c $files
+
+  racket-check:
+    name: Racket Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Racket files found
+        run: |
+          files=$(find . -name "*.rkt")
+          if [ -z "$files" ]; then
+            echo "No racket files found."
+            exit 0
+          fi
+          racket --check-syntax $files
+
+  reason-check:
+    name: Reason Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Reason files found
+        run: |
+          files=$(find . -name "*.re")
+          if [ -z "$files" ]; then
+            echo "No reason files found."
+            exit 0
+          fi
+          refmt --parse re --print ml $files
+
+  smalltalk-check:
+    name: Smalltalk Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Smalltalk files found
+        run: |
+          files=$(find . -name "*.st")
+          if [ -z "$files" ]; then
+            echo "No smalltalk files found."
+            exit 0
+          fi
+          gst $files
+
+  snobol-check:
+    name: Snobol Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Snobol files found
+        run: |
+          files=$(find . -name "*.sno")
+          if [ -z "$files" ]; then
+            echo "No snobol files found."
+            exit 0
+          fi
+          snobol4 $files
+
+  wolfram-check:
+    name: Wolfram Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Wolfram files found
+        run: |
+          files=$(find . -name "*.nb")
+          if [ -z "$files" ]; then
+            echo "No wolfram files found."
+            exit 0
+          fi
+          wolfram -script $files
+
+  x10-check:
+    name: X10 Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List X10 files found
+        run: |
+          files=$(find . -name "*.x10")
+          if [ -z "$files" ]; then
+            echo "No x10 files found."
+            exit 0
+          fi
+          x10c $files
+
+  zsh-check:
+    name: Zsh Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Zsh files found
+        run: |
+          files=$(find . -name "*.zsh")
+          if [ -z "$files" ]; then
+            echo "No zsh files found."
+            exit 0
+          fi
+          for file in $files; do
+            zsh -n "$file"
+          done
+
+  actionscript-check:
+    name: Actionscript Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Actionscript files found
+        run: |
+          files=$(find . -name "*.as")
+          if [ -z "$files" ]; then
+            echo "No actionscript files found."
+            exit 0
+          fi
+          asc $files
+
+  ada-check:
+    name: Ada Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Ada files found
+        run: |
+          files=$(find . -name "*.adb" -o -name "*.ads")
+          if [ -z "$files" ]; then
+            echo "No ada files found."
+            exit 0
+          fi
+          gnatmake -gnat2012 $files
+
+  bcpl-check:
+    name: Bcpl Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Bcpl files found
+        run: |
+          files=$(find . -name "*.b")
+          if [ -z "$files" ]; then
+            echo "No bcpl files found."
+            exit 0
+          fi
+          bcpl $files
+
+  blitzbasic-check:
+    name: Blitzbasic Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Blitzbasic files found
+        run: |
+          files=$(find . -name "*.bb")
+          if [ -z "$files" ]; then
+            echo "No blitzbasic files found."
+            exit 0
+          fi
+          blitz $files
+
+  boo-check:
+    name: Boo Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Boo files found
+        run: |
+          files=$(find . -name "*.boo")
+          if [ -z "$files" ]; then
+            echo "No boo files found."
+            exit 0
+          fi
+          boo -check $files
+
+  chapel-check:
+    name: Chapel Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Chapel files found
+        run: |
+          files=$(find . -name "*.chpl")
+          if [ -z "$files" ]; then
+            echo "No chapel files found."
+            exit 0
+          fi
+          chpl $files
+
+  d-check:
+    name: D Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List D files found
+        run: |
+          files=$(find . -name "*.d")
+          if [ -z "$files" ]; then
+            echo "No d files found."
+            exit 0
+          fi
+          dmd -check $files
+
+  delphi-check:
+    name: Delphi Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Delphi files found
+        run: |
+          files=$(find . -name "*.pas")
+          if [ -z "$files" ]; then
+            echo "No delphi files found."
+            exit 0
+          fi
+          dcc32 $files
+
+  eiffel-check:
+    name: Eiffel Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Eiffel files found
+        run: |
+          files=$(find . -name "*.e")
+          if [ -z "$files" ]; then
+            echo "No eiffel files found."
+            exit 0
+          fi
+          ec $files
+
+  factor-check:
+    name: Factor Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Factor files found
+        run: |
+          files=$(find . -name "*.factor")
+          if [ -z "$files" ]; then
+            echo "No factor files found."
+            exit 0
+          fi
+          factor --check $files
+
+  futhark-check:
+    name: Futhark Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Futhark files found
+        run: |
+          files=$(find . -name "*.fut")
+          if [ -z "$files" ]; then
+            echo "No futhark files found."
+            exit 0
+          fi
+          futhark check $files
+
+  gams-check:
+    name: Gams Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Gams files found
+        run: |
+          files=$(find . -name "*.gms")
+          if [ -z "$files" ]; then
+            echo "No gams files found."
+            exit 0
+          fi
+          gams $files
+
+  gdb-check:
+    name: Gdb Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Gdb files found
+        run: |
+          files=$(find . -name "*.gdb")
+          if [ -z "$files" ]; then
+            echo "No gdb files found."
+            exit 0
+          fi
+          gdb -batch -ex 'quit'
+
+  gml-check:
+    name: Gml Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Gml files found
+        run: |
+          files=$(find . -name "*.gml")
+          if [ -z "$files" ]; then
+            echo "No gml files found."
+            exit 0
+          fi
+          gml_check $files
+
+  hack-check:
+    name: Hack Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Hack files found
+        run: |
+          files=$(find . -name "*.hh")
+          if [ -z "$files" ]; then
+            echo "No hack files found."
+            exit 0
+          fi
+          hh_client check $files
+
+  haxe-check:
+    name: Haxe Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Haxe files found
+        run: |
+          files=$(find . -name "*.hx")
+          if [ -z "$files" ]; then
+            echo "No haxe files found."
+            exit 0
+          fi
+          haxe --check $files
+
+  icon-check:
+    name: Icon Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Icon files found
+        run: |
+          files=$(find . -name "*.icn")
+          if [ -z "$files" ]; then
+            echo "No icon files found."
+            exit 0
+          fi
+          icon $files
+
+  idl-check:
+    name: Idl Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Idl files found
+        run: |
+          files=$(find . -name "*.pro")
+          if [ -z "$files" ]; then
+            echo "No idl files found."
+            exit 0
+          fi
+          idl $files
+
+  inform-check:
+    name: Inform Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Inform files found
+        run: |
+          files=$(find . -name "*.inf")
+          if [ -z "$files" ]; then
+            echo "No inform files found."
+            exit 0
+          fi
+          inform $files
+
+  io-check:
+    name: Io Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Io files found
+        run: |
+          files=$(find . -name "*.io")
+          if [ -z "$files" ]; then
+            echo "No io files found."
+            exit 0
+          fi
+          io $files
+
+  j-check:
+    name: J Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List J files found
+        run: |
+          files=$(find . -name "*.ijs")
+          if [ -z "$files" ]; then
+            echo "No j files found."
+            exit 0
+          fi
+          jconsole $files
+
+  jasmin-check:
+    name: Jasmin Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Jasmin files found
+        run: |
+          files=$(find . -name "*.j")
+          if [ -z "$files" ]; then
+            echo "No jasmin files found."
+            exit 0
+          fi
+          jasmin $files
+
+  jsonnet-check:
+    name: Jsonnet Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Jsonnet files found
+        run: |
+          files=$(find . -name "*.jsonnet")
+          if [ -z "$files" ]; then
+            echo "No jsonnet files found."
+            exit 0
+          fi
+          jsonnet fmt --check $files
+
+  kix-check:
+    name: Kix Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Kix files found
+        run: |
+          files=$(find . -name "*.kix")
+          if [ -z "$files" ]; then
+            echo "No kix files found."
+            exit 0
+          fi
+          kix $files
+
+  livecode-check:
+    name: Livecode Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Livecode files found
+        run: |
+          files=$(find . -name "*.livecode")
+          if [ -z "$files" ]; then
+            echo "No livecode files found."
+            exit 0
+          fi
+          livecode-check $files
+
+  lsl-check:
+    name: Lsl Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Lsl files found
+        run: |
+          files=$(find . -name "*.lsl")
+          if [ -z "$files" ]; then
+            echo "No lsl files found."
+            exit 0
+          fi
+          lsl-compile $files
+
+  modula-2-check:
+    name: Modula-2 Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Modula-2 files found
+        run: |
+          files=$(find . -name "*.mod")
+          if [ -z "$files" ]; then
+            echo "No modula-2 files found."
+            exit 0
+          fi
+          m2cc $files
+
+  moonScript-check:
+    name: Moonscript Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Moonscript files found
+        run: |
+          files=$(find . -name "*.moon")
+          if [ -z "$files" ]; then
+            echo "No moonScript files found."
+            exit 0
+          fi
+          moonc -c $files
+
+  nemerle-check:
+    name: Nemerle Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Nemerle files found
+        run: |
+          files=$(find . -name "*.n")
+          if [ -z "$files" ]; then
+            echo "No nemerle files found."
+            exit 0
+          fi
+          ncc $files
+
+  oberon-check:
+    name: Oberon Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Oberon files found
+        run: |
+          files=$(find . -name "*.ob")
+          if [ -z "$files" ]; then
+            echo "No oberon files found."
+            exit 0
+          fi
+          oberonc $files
+
+  pike-check:
+    name: Pike Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Pike files found
+        run: |
+          files=$(find . -name "*.pike")
+          if [ -z "$files" ]; then
+            echo "No pike files found."
+            exit 0
+          fi
+          pike --check-syntax $files
+
+  plpgsql-check:
+    name: Plpgsql Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Plpgsql files found
+        run: |
+          files=$(find . -name "*.pgsql")
+          if [ -z "$files" ]; then
+            echo "No plpgsql files found."
+            exit 0
+          fi
+          psql --no-execute $files
+
+  postscript-check:
+    name: Postscript Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Postscript files found
+        run: |
+          files=$(find . -name "*.ps")
+          if [ -z "$files" ]; then
+            echo "No postscript files found."
+            exit 0
+          fi
+          gs -dNODISPLAY -q -c "($files) run"
+
+  processing-check:
+    name: Processing Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Processing files found
+        run: |
+          files=$(find . -name "*.pde")
+          if [ -z "$files" ]; then
+            echo "No processing files found."
+            exit 0
+          fi
+          processing-java --check $files
+
+  prolog-check:
+    name: Prolog Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Prolog files found
+        run: |
+          files=$(find . -name "*.pl")
+          if [ -z "$files" ]; then
+            echo "No prolog files found."
+            exit 0
+          fi
+          swipl -q -t halt -c $files
+
+  purebasic-check:
+    name: Purebasic Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Purebasic files found
+        run: |
+          files=$(find . -name "*.pb")
+          if [ -z "$files" ]; then
+            echo "No purebasic files found."
+            exit 0
+          fi
+          pbcompiler $files
+
+  rebol-check:
+    name: Rebol Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Rebol files found
+        run: |
+          files=$(find . -name "*.r")
+          if [ -z "$files" ]; then
+            echo "No rebol files found."
+            exit 0
+          fi
+          rebol --check $files
+
+  ring-check:
+    name: Ring Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Ring files found
+        run: |
+          files=$(find . -name "*.ring")
+          if [ -z "$files" ]; then
+            echo "No ring files found."
+            exit 0
+          fi
+          ring -check $files
+
+  sather-check:
+    name: Sather Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Sather files found
+        run: |
+          files=$(find . -name "*.sa")
+          if [ -z "$files" ]; then
+            echo "No sather files found."
+            exit 0
+          fi
+          sather -check $files
+
+  self-check:
+    name: Self Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Self files found
+        run: |
+          files=$(find . -name "*.self")
+          if [ -z "$files" ]; then
+            echo "No self files found."
+            exit 0
+          fi
+          self-check $files
+
+  slang-check:
+    name: Slang Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Slang files found
+        run: |
+          files=$(find . -name "*.sl")
+          if [ -z "$files" ]; then
+            echo "No slang files found."
+            exit 0
+          fi
+          slang-check $files
+
+  spin-check:
+    name: Spin Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Spin files found
+        run: |
+          files=$(find . -name "*.spin")
+          if [ -z "$files" ]; then
+            echo "No spin files found."
+            exit 0
+          fi
+          spin --check $files
+
+  turing-check:
+    name: Turing Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Turing files found
+        run: |
+          files=$(find . -name "*.t")
+          if [ -z "$files" ]; then
+            echo "No turing files found."
+            exit 0
+          fi
+          turing-check $files
+
+  vbs-check:
+    name: Vbs Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Vbs files found
+        run: |
+          files=$(find . -name "*.vbs")
+          if [ -z "$files" ]; then
+            echo "No vbs files found."
+            exit 0
+          fi
+          for file in $files; do
+            cscript //nologo //e:vbscript "$file"
+          done
+
+  xtend-check:
+    name: Xtend Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Xtend files found
+        run: |
+          files=$(find . -name "*.xtend")
+          if [ -z "$files" ]; then
+            echo "No xtend files found."
+            exit 0
+          fi
+          xtend $files
+
+  zpl-check:
+    name: Zpl Syntax Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List Zpl files found
+        run: |
+          files=$(find . -name "*.zpl")
+          if [ -z "$files" ]; then
+            echo "No zpl files found."
+            exit 0
+          fi
+          zpl --check $files

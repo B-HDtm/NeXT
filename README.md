@@ -6,8 +6,8 @@
 
 ## 🚀 What is NeXT?
 
-NeXT is a lightweight, multi-language **blockchain simulation** designed to help understand and demonstrate the core concepts of blockchain technology without the complexity of a full cryptocurrency.  
-NXT symbolizes the **Next Generation** of blockchain development, integrating C++, Java, PHP, JavaScript, and Python — all working together as one.
+NeXT is a lightweight, multi-language **blockchain** designed to help understand and demonstrate the core concepts of blockchain technology without the complexity of a full cryptocurrency.  
+NXT symbolizes the **Next level** of blockchain development, integrating C++, Java, PHP, JavaScript, and Python — all working together as one.
 
 ---
 
@@ -75,10 +75,9 @@ NXT symbolizes the **Next Generation** of blockchain development, integrating C+
 
 ## 🤝 Contributors
 
-- Mark Voznyuk and the B*HD (Hyper Developer) team
 - 10+ passionate blockchain developers
 
-Your contributions and ideas are always welcome!
+Ideas are always welcome!
 
 ---
 

@@ -37,6 +37,16 @@ NXT symbolizes the **Next level** of blockchain development, integrating C++, Ja
 
 ---
 
+## NeXT> Test blockchain now
+
+- New *NeXT token* **update**
+- Now a **web terminal** is available where you can **check the blockchain in this repository without libraries and downloads**, just *start* and done!
+- More information and a **list of commands in help** for information about **NeXT Online Terminal** write **ter**
+
+- You can **check the blockchain** [*here*](https://nxt-token.pp.ua)
+
+---
+
 ## 🛠 Getting Started
 
 1. Clone the repository:

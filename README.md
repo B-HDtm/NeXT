@@ -44,6 +44,7 @@ NXT symbolizes the **Next level** of blockchain development, integrating C++, Ja
 - More information and a **list of commands in help** for information about **NeXT Online Terminal** write **ter**
 
 - You can **check the blockchain** [*here*](https://nxt-token.pp.ua)
+- **Warning!** NeXT Online Terminal (NEXTerminal) **≠** **Linux Or Unix like** (This is not a **system or OS**)
 
 ---
 

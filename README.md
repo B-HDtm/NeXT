@@ -1,5 +1,9 @@
 # NeXT Blockchain (NXT) ⥉
 
+  <img src="https://img.shields.io/badge/Blockchain-Future-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Created by -Blockchain Hyper Development™-purple?style=for-the-badge" />
+
+
 ![NeXT Logo](https://github.com/B-HDtm/NeXT/blob/main/ico.png)
 
 ---
